@@ -5,3 +5,10 @@ interface Platform {
 }
 
 expect fun getPlatform(): Platform
+
+/**
+ * Menampilkan sapaan.
+ * Menggunakan fungsi getPlatform() yang dideklarasikan.
+ */
+fun sapaan(): String =
+    "Agenda UKM berjalan di ${getPlatform().name}"

@@ -21,8 +21,6 @@ Tugas Praktikum Minggu 1 mencakup implementasi dasar Kotlin Multiplatform (KMP) 
 
 ### Hasil Pengujian Aplikasi
 
-#### 1. Tampilan Aplikasi di Desktop
-![Tampilan Desktop](desktopp.png)
-
-#### 2. Tampilan Aplikasi di Android
-![Tampilan Android](android.png)
+| Tampilan Aplikasi di Desktop | Tampilan Aplikasi di Android | 
+|:----------------------------:|:----------------------------:| 
+|   ![Desktop](desktopp.png)   |   ![Android](android.png)    | 

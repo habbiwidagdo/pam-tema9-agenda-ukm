@@ -14,3 +14,5 @@ expect fun namaPlatform(): String
  */
 fun sapaan(): String =
     "Agenda UKM berjalan di ${namaPlatform()}"
+
+

@@ -9,8 +9,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 
 import com.agendaukm.model.*
-import agendaukm.shared.generated.resources.Res
-import agendaukm.shared.generated.resources.compose_multiplatform
+//import agendaukm.shared.generated.resources.Res
+//import agendaukm.shared.generated.resources.compose_multiplatform
 
 @Composable
 fun App() = MaterialTheme {
@@ -64,6 +64,7 @@ fun App() = MaterialTheme {
         println("\nUJI COPY")
         println("Apakah objek awal dan baru sama? ${kegiatanAwal === kegiatanBaru}")
     }
+
 //    Membuat variabel tampil yang menyimpan nilai perubahaan dari fungsi sapaan()
     var tampil by remember { mutableStateOf(false) }
 //    Membuat kolom yang berisi teks dan tombol

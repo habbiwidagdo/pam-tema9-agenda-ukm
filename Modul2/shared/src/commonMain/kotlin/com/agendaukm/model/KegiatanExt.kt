@@ -16,6 +16,6 @@ fun Kegiatan.ringkas(): String {
     val adaDetail = deskripsiKegiatan?.isNotBlank()
 
     return "#$id $namaKegiatan | PJ: ${ukm.penanggungJawab}\n" +
-            "Jadwal: $tanggalKegiatan ($waktuMulai - $waktuSelesai)\n | Lokasi: $ruangan\n" +
+            "Jadwal: $tanggalKegiatan ($waktuMulai - $waktuSelesai)\n|Lokasi: $ruangan\n" +
             "Info: $detail (Ada deskripsi? $adaDetail)"
 }

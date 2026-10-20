@@ -12,7 +12,7 @@ fun Kegiatan.ringkas(): String {
     // Memakai elvis operator (?:) untuk menangani null
     val detail = deskripsiKegiatan ?: "Tidak ada deskripsi"
 
-    // Memakai safe call (?.) untuk jalankan hanya kalau tidak null
+    // Memakai Safe Call (?.) mengecek apakah deskripsi ada isinya, menghasilkan null jika deskripsiKegiatan null
     val adaDetail = deskripsiKegiatan?.isNotBlank()
 
     return "#$id $namaKegiatan | PJ: ${ukm.penanggungJawab}\n" +

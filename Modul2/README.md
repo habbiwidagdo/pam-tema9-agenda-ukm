@@ -1,4 +1,4 @@
-# pam-tema9-agenda-ukm
+﻿# pam-tema9-agenda-ukm
 
 ## Nomor & Nama Tema
 - **Nomor tema:** 9
@@ -23,7 +23,7 @@ Tugas Praktikum Minggu 1 mencakup implementasi dasar Kotlin Multiplatform (KMP) 
 
 | Tampilan Aplikasi di Desktop | Tampilan Aplikasi di Android | 
 |:----------------------------:|:----------------------------:| 
-|   ![Desktop](img/android.png)   |   ![Android](img/desktopp.png)    | 
+|   ![Android](img/android.png)   |   ![Desktop](img/desktopp.png)    | 
 
 ## Praktikum 2
 
@@ -36,6 +36,15 @@ Tugas Praktikum Minggu 2 mencakup penerapan Kotlin dasar lanjutan, data class, n
 - **Pengujian:** Menjalankan pengujian pada target JVM (Desktop) untuk memeriksa hasil implementasi.
 
 ### Hasil Pengujian Aplikasi
+
+**Tampilan Aplikasi di Desktop**
+
+![Desktop](img/desktopp.png)
+
+**Tampilan Aplikasi di Android**
+
+![Android](img/android.png)
+
 
 
 ### Hasil Pengujian Coroutines dan Flow
@@ -50,16 +59,6 @@ Pengujian dilakukan menggunakan Coroutines dan Flow untuk memantau perubahan sta
 | 2 | Arsa Salsabila | Membuat extension function `label()` dan `ringkas()`, serta menguji `copy()` dan null safety. |
 | 3 | Habbi Widagdo | Membuat sumber data kegiatan menggunakan Coroutines dan Flow. |
 | 4 | Najlatika | Menguji pengolahan data menggunakan `runBlocking`, `filter`, `map`, dan `collect`, serta menyusun dokumentasi README. |
-
-### Screenshot Aplikasi
-
-**Tampilan Aplikasi di Desktop**
-
-![Desktop](img/desktopp.png)
-
-**Tampilan Aplikasi di Android**
-
-![Android](img/android.png)
 
 **Output Pengujian:**
 
@@ -76,3 +75,9 @@ Info: Latihan mingguan persiapan rekrutmen (Ada deskripsi? true)
 ```
 
 **Status Pengujian:** Berhasil   1 pengujian dijalankan, 0 gagal, dan 0 error.
+
+
+
+
+
+

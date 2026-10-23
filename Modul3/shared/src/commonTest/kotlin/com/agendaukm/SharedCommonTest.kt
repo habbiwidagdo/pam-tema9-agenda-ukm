@@ -11,6 +11,7 @@ import kotlinx.coroutines.runBlocking
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+import com.agendaukm.model.filterByStatus
 
 class SharedCommonTest {
 
@@ -42,5 +43,24 @@ class SharedCommonTest {
 
         // Memastikan isi string hasil transformasi mengandung nama kegiatan yang sesuai
         assertTrue(hasilDiterima[0].contains("Latihan Rutin Basket"))
+    }
+
+    @Test
+    fun testFilterKegiatanBerdasarkanStatus() {
+        // 1. Membuat sumber data kegiatan palsu.
+        val sumber = SumberKegiatanPalsu()
+
+        // 2. Mengambil satu contoh kegiatan.
+        runBlocking {
+            val kegiatan = sumber.ambil(id = 1)
+
+            // 3. Menyaring kegiatan berdasarkan status Mendatang.
+            val hasil = listOf(kegiatan)
+                .filterByStatus(StatusKegiatan.Mendatang)
+
+            // 4. Memastikan hasil filter sesuai.
+            assertEquals(1, hasil.size)
+            assertEquals(StatusKegiatan.Mendatang, hasil[0].status)
+        }
     }
 }

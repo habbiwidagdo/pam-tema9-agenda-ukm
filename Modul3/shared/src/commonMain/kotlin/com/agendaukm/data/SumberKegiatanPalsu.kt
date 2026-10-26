@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
 // Class penyedia dummy data
-class SumberKegiatanPalsu : Sumber<Kegiatan> {
+class SumberKegiatanPalsu:Sumber<Kegiatan> {
 
     // Kumpulan dummy data UKM penyelenggara
     private val ukmBadminton = UKM(2, "UKM Badminton Team", "Ucup", "081234567890")

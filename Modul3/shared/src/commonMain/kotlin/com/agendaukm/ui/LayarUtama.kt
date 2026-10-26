@@ -15,6 +15,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.agendaukm.data.SumberKegiatanPalsu
 import com.agendaukm.model.Kegiatan
+import androidx.compose.ui.graphics.Color
 
 // Komponen antarmuka utama layar yang menyusun header, daftar kegiatan, dan tombol FAB menggunakan Scaffold
 @OptIn(ExperimentalMaterial3Api::class)
@@ -35,8 +36,8 @@ fun LayarUtama(
                     )
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                    containerColor = Color(0xFFF9B682),
+                    titleContentColor = Color(0xFF252642)
                 )
             )
         },

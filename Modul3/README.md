@@ -39,11 +39,11 @@ Tugas Praktikum Minggu 2 mencakup penerapan Kotlin dasar lanjutan, data class, n
 
 **Tampilan Aplikasi di Desktop**
 
-![Desktop](img/desktopp.png)
+<img src="img/desktopp.png" alt="Tampilan aplikasi di Desktop pada Praktikum 2" width="480">
 
 **Tampilan Aplikasi di Android**
 
-![Android](img/android.png)
+<img src="img/android.png" alt="Tampilan aplikasi di Android pada Praktikum 2" width="240">
 
 
 
@@ -76,8 +76,50 @@ Info: Latihan mingguan persiapan rekrutmen (Ada deskripsi? true)
 
 **Status Pengujian:** Berhasil   1 pengujian dijalankan, 0 gagal, dan 0 error.
 
+## Praktikum 3
 
+Praktikum 3 mengimplementasikan antarmuka Agenda UKM dengan Compose Multiplatform berdasarkan pembagian tugas kelompok. Aplikasi menampilkan daftar kegiatan yang disediakan oleh `SumberKegiatanPalsu`, lengkap dengan nama kegiatan, UKM penyelenggara, jadwal, dan label status.
 
+- **Label status:** Menampilkan `StatusKegiatan` dari Modul 2 sebagai badge berwarna dengan latar dan sudut membulat.
+- **Pengolahan koleksi:** Menyediakan filter kegiatan berdasarkan status melalui extension function `filterByStatus`.
+- **Kartu kegiatan:** Menampilkan informasi kegiatan dan status dalam kartu yang dapat merespons ketukan.
+- **Daftar kegiatan:** Menampilkan data menggunakan `LazyColumn`, `items()`, dan key berdasarkan ID kegiatan.
+- **Layar utama:** Menyusun header, daftar kegiatan, dan FloatingActionButton (FAB) dalam `Scaffold`. FAB saat ini hanya menjadi elemen kerangka antarmuka dan belum menjalankan aksi tambah kegiatan.
+- **Pengujian:** Menjalankan pengujian mekanisme filter dan uji tampilan pada Desktop (JVM) serta Android.
 
+### Hasil Pengujian Antarmuka
 
+**Tampilan Aplikasi di Desktop**
 
+<img src="img/dekstop-prak3.png" alt="Tampilan aplikasi di Desktop pada Praktikum 3" width="480">
+
+**Tampilan Aplikasi di Android**
+
+<img src="img/andro-prak3.png" alt="Tampilan aplikasi di Android pada Praktikum 3" width="240">
+
+### Hasil Pengujian Mekanisme Filter Kegiatan
+
+Pengujian dilakukan pada target JVM melalui `:shared:jvmTest` dan berhasil. Analisis kode menunjukkan dua mekanisme filter yang diuji:
+
+1. Pada `testPantauKegiatanDenganFlowOperator`, Flow `pantau(id = 1)` memancarkan kegiatan dengan status Mendatang, Berlangsung, lalu Selesai. Operator `filter` membuang emisi berstatus Mendatang, `map` mengubah dua emisi yang tersisa menjadi ringkasan melalui `ringkas()`, dan `collect` mengumpulkan hasilnya. Pengujian memastikan ada dua hasil dan ringkasan memuat nama kegiatan yang diharapkan.
+2. Pada `testFilterKegiatanBerdasarkanStatus`, extension function `filterByStatus(StatusKegiatan.Mendatang)` memilih hanya kegiatan yang statusnya sama persis dengan status yang diminta. Pengujian memastikan satu kegiatan terpilih dan statusnya Mendatang.
+
+Filter berdasarkan status tersebut merupakan fungsi pengolahan koleksi yang tersedia dan diuji; layar utama saat ini masih menampilkan seluruh daftar kegiatan dan belum menyediakan kontrol filter interaktif.
+
+### Pembagian Tugas Kelompok
+
+#### Tugas 1 — Najlatika
+- Membuat `LabelStatus.kt` untuk memvisualisasikan badge/pil dari `StatusKegiatan` menggunakan background dan `RoundedCornerShape`.
+- Membuat fungsi pengolahan koleksi kegiatan berupa logika filter atau sorting. Implementasi saat ini menyediakan `filterByStatus` untuk menyaring kegiatan berdasarkan status.
+
+#### Tugas 2 — Afifa Aulia
+- Membuat `KartuKegiatan.kt`, komponen `Card` untuk menampilkan entitas `Kegiatan` beserta nama UKM dan label `StatusKegiatan` dari Modul 2, menggunakan layout `Row`, `Column`, dan `weight`.
+- Menerapkan event handler lambda `onKlik: () -> Unit` agar kartu merespons ketukan.
+
+#### Tugas 3 — Arsa Salsabila
+- Memperbarui `SumberKegiatanPalsu.kt` dengan minimal 10 data dummy kegiatan yang memiliki variasi status dan UKM. Implementasi saat ini menyediakan 11 kegiatan.
+- Membuat `DaftarKegiatan.kt` menggunakan `LazyColumn` dan `items()` dengan key ID untuk menampilkan daftar kartu secara efisien.
+
+#### Tugas 4 — Habbi Widagdo
+- Membuat `LayarUtama.kt` yang menyusun layar menggunakan `Scaffold`, header judul, dan FAB sebagai elemen kerangka antarmuka.
+- Menghubungkan `LayarUtama` ke `App.kt`, menguji tampilan pada Desktop dan Android, serta memperbarui README dengan tangkapan layar UI.

@@ -1,21 +1,19 @@
 package com.agendaukm
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.layout.Column
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
-
-import com.agendaukm.model.*
-//import agendaukm.shared.generated.resources.Res
-//import agendaukm.shared.generated.resources.compose_multiplatform
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import com.agendaukm.model.Kegiatan
+import com.agendaukm.model.StatusKegiatan
+import com.agendaukm.model.UKM
+import com.agendaukm.model.label
+import com.agendaukm.model.ringkas
+import com.agendaukm.ui.LayarUtama
 
 @Composable
 fun App() = MaterialTheme {
 
-    // Pengujian tugas 2: LaunchedEfffect(Unit) berjalan otomatis di background saat UI muncul
+    // Pengujian tugas 2: LaunchedEffect(Unit) berjalan otomatis di background saat UI muncul
     LaunchedEffect(Unit){
         println("Verifikasi Tugas 2")
 
@@ -65,16 +63,5 @@ fun App() = MaterialTheme {
         println("Apakah objek awal dan baru sama? ${kegiatanAwal === kegiatanBaru}")
     }
 
-//    Membuat variabel tampil yang menyimpan nilai perubahaan dari fungsi sapaan()
-    var tampil by remember { mutableStateOf(false) }
-//    Membuat kolom yang berisi teks dan tombol
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text("AgendaUKM")
-//        Membuat tombol yang ketika ditekan akan mengubah nilai tampil menjadi kebalikannya
-        Button(onClick = { tampil = !tampil }) {
-            Text("Cek platform")
-        }
-//        Menampilkan teks sapaan yang sesuai dengan nilai tampil
-        AnimatedVisibility(tampil) { Text(sapaan()) }
-    }
+    LayarUtama()
 }

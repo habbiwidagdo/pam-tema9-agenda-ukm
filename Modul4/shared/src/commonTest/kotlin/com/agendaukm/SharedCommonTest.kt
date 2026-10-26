@@ -1,6 +1,5 @@
 package com.agendaukm
 
-import kotlin.test.assertEquals
 import com.agendaukm.data.SumberKegiatanPalsu
 import com.agendaukm.model.StatusKegiatan
 import com.agendaukm.model.ringkas
@@ -12,6 +11,10 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import com.agendaukm.model.filterByStatus
+import com.agendaukm.ui.KegiatanFormUiState
+import com.agendaukm.ui.KegiatanFormViewModel
+import kotlin.test.assertFalse
+import com.agendaukm.model.UKM
 
 class SharedCommonTest {
 
@@ -62,5 +65,197 @@ class SharedCommonTest {
             assertEquals(1, hasil.size)
             assertEquals(StatusKegiatan.Mendatang, hasil[0].status)
         }
+    }
+
+    // Menguji validasi form ketika semua kolom masih kosong.
+    // Form yang belum lengkap seharusnya tidak bisa disimpan.
+    @Test
+    fun testFormBelumLengkapTidakBisaDisimpan() {
+        val state = KegiatanFormUiState()
+
+        assertFalse(state.bisaSimpan)
+    }
+
+    // Menguji validasi form ketika seluruh kolom wajib sudah diisi.
+    // Deskripsi bersifat opsional sehingga boleh dibiarkan kosong.
+    @Test
+    fun testFormLengkapBisaDisimpan() {
+        val state = KegiatanFormUiState(
+            namaKegiatan = "Latihan Rutin",
+            tanggalKegiatan = "30 Oktober 2026",
+            waktuMulai = "19:00 WIB",
+            waktuSelesai = "21:00 WIB",
+            ruangan = "GOR ITERA",
+            idUKM = 1
+        )
+
+        assertEquals(true, state.bisaSimpan)
+    }
+
+    // Menguji apakah ViewModel berhasil memperbarui nama kegiatan.
+    @Test
+    fun testViewModelMengubahNamaKegiatan() {
+        val viewModel = KegiatanFormViewModel()
+
+        viewModel.ubahNamaKegiatan("Latihan Rutin Basket")
+
+        assertEquals(
+            "Latihan Rutin Basket",
+            viewModel.uiState.value.namaKegiatan
+        )
+    }
+
+    // Menguji apakah proses penyimpanan ditolak ketika form kosong.
+    // Pesan validasi harus ditampilkan dan status menyimpan tetap false.
+    @Test
+    fun testMulaiMenyimpanMenolakFormKosong() {
+        val viewModel = KegiatanFormViewModel()
+
+        val hasil = viewModel.mulaiMenyimpan()
+
+        assertFalse(hasil)
+        assertEquals(
+            "Lengkapi semua kolom wajib terlebih dahulu.",
+            viewModel.uiState.value.pesan
+        )
+        assertEquals(false, viewModel.uiState.value.sedangMenyimpan)
+    }
+
+    // Menguji apakah proses penyimpanan dapat dimulai ketika form valid.
+    // Status menyimpan menjadi true dan pesan sebelumnya dibersihkan.
+    @Test
+    fun testMulaiMenyimpanMenerimaFormValid() {
+        val viewModel = KegiatanFormViewModel()
+
+        viewModel.ubahNamaKegiatan("Latihan Rutin")
+        viewModel.ubahTanggalKegiatan("30 Oktober 2026")
+        viewModel.ubahWaktuMulai("19:00 WIB")
+        viewModel.ubahWaktuSelesai("21:00 WIB")
+        viewModel.ubahRuangan("GOR ITERA")
+        viewModel.ubahUKM(1)
+
+        val hasil = viewModel.mulaiMenyimpan()
+
+        assertEquals(true, hasil)
+        assertEquals(true, viewModel.uiState.value.sedangMenyimpan)
+        assertEquals(null, viewModel.uiState.value.pesan)
+    }
+
+    // Menguji pengiriman kegiatan ketika penyimpanan berhasil.
+    @Test
+    fun testKirimBerhasilMenyimpanKegiatan() = runBlocking {
+        val viewModel = KegiatanFormViewModel()
+        val ukm = UKM(
+            id = 1,
+            namaUKM = "UKM Basket",
+            penanggungJawab = "Joko",
+            kontakPerson = "12345678"
+        )
+
+        // Mengisi seluruh kolom wajib pada form.
+        viewModel.ubahNamaKegiatan("Latihan Rutin")
+        viewModel.ubahDeskripsiKegiatan("Latihan mingguan")
+        viewModel.ubahTanggalKegiatan("2026-11-01")
+        viewModel.ubahWaktuMulai("09:00")
+        viewModel.ubahWaktuSelesai("11:00")
+        viewModel.ubahRuangan("Aula")
+        viewModel.ubahUKM(1)
+
+        var fungsiSimpanDipanggil = false
+
+        // Memeriksa data kegiatan yang diserahkan untuk disimpan.
+        val hasil = viewModel.kirim(12, ukm) { kegiatan ->
+            fungsiSimpanDipanggil = true
+
+            assertEquals(12, kegiatan.id)
+            assertEquals("Latihan Rutin", kegiatan.namaKegiatan)
+            assertEquals(
+                "Latihan mingguan",
+                kegiatan.deskripsiKegiatan
+            )
+            assertEquals("2026-11-01", kegiatan.tanggalKegiatan)
+            assertEquals("09:00", kegiatan.waktuMulai)
+            assertEquals("11:00", kegiatan.waktuSelesai)
+            assertEquals("Aula", kegiatan.ruangan)
+            assertEquals(1, kegiatan.ukm.id)
+            assertEquals(StatusKegiatan.Mendatang, kegiatan.status)
+        }
+
+        // Memastikan penyimpanan berhasil dan form kembali kosong.
+        assertTrue(hasil)
+        assertTrue(fungsiSimpanDipanggil)
+        assertEquals("", viewModel.uiState.value.namaKegiatan)
+        assertFalse(viewModel.uiState.value.sedangMenyimpan)
+    }
+
+    // Menguji penolakan penyimpanan jika ID UKM tidak sesuai.
+    @Test
+    fun testKirimMenolakUKMTidakValid() = runBlocking {
+        val viewModel = KegiatanFormViewModel()
+
+        viewModel.ubahNamaKegiatan("Latihan Rutin")
+        viewModel.ubahTanggalKegiatan("2026-11-01")
+        viewModel.ubahWaktuMulai("09:00")
+        viewModel.ubahWaktuSelesai("11:00")
+        viewModel.ubahRuangan("Aula")
+        viewModel.ubahUKM(1)
+
+        val ukm = UKM(
+            id = 2,
+            namaUKM = "UKM Musik",
+            penanggungJawab = "Rina",
+            kontakPerson = "87654321"
+        )
+
+        var fungsiSimpanDipanggil = false
+
+        val hasil = viewModel.kirim(12, ukm) {
+            fungsiSimpanDipanggil = true
+        }
+
+        assertFalse(hasil)
+        assertFalse(fungsiSimpanDipanggil)
+        assertFalse(viewModel.uiState.value.sedangMenyimpan)
+        assertEquals(
+            "UKM yang dipilih tidak valid.",
+            viewModel.uiState.value.pesan
+        )
+    }
+
+    // Menguji penanganan error ketika penyimpanan gagal.
+    @Test
+    fun testKirimMenanganiKegagalanPenyimpanan() = runBlocking {
+        val viewModel = KegiatanFormViewModel()
+        val ukm = UKM(
+            id = 1,
+            namaUKM = "UKM Basket",
+            penanggungJawab = "Joko",
+            kontakPerson = "12345678"
+        )
+
+        viewModel.ubahNamaKegiatan("Latihan Rutin")
+        viewModel.ubahTanggalKegiatan("2026-11-01")
+        viewModel.ubahWaktuMulai("09:00")
+        viewModel.ubahWaktuSelesai("11:00")
+        viewModel.ubahRuangan("Aula")
+        viewModel.ubahUKM(1)
+
+        // Mensimulasikan kegagalan fungsi penyimpanan.
+        val hasil = viewModel.kirim(12, ukm) {
+            throw IllegalStateException("Penyimpanan bermasalah")
+        }
+
+        assertFalse(hasil)
+        assertFalse(viewModel.uiState.value.sedangMenyimpan)
+        assertEquals(
+            "Penyimpanan bermasalah",
+            viewModel.uiState.value.pesan
+        )
+
+        // Memastikan data form tetap tersedia untuk dicoba kembali.
+        assertEquals(
+            "Latihan Rutin",
+            viewModel.uiState.value.namaKegiatan
+        )
     }
 }

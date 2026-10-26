@@ -8,6 +8,7 @@ import com.agendaukm.model.UKM
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import com.agendaukm.data.PenyimpananAgendaUKM
 
 class KegiatanFormViewModel : ViewModel() {
 
@@ -91,10 +92,10 @@ class KegiatanFormViewModel : ViewModel() {
     // Membentuk objek Kegiatan dan menyerahkannya ke fungsi penyimpanan
     // Fungsi simpan disediakan oleh pemanggil agar dapat dihubungkan
     // dengan mekanisme penyimpanan yang dibuat oleh anggota lain
-    suspend fun kirim(
+    fun kirim(
         idKegiatan: Int,
         ukm: UKM?,
-        simpan: suspend (Kegiatan) -> Unit
+//        simpan: suspend (Kegiatan) -> Unit
     ): Boolean {
 
         // Menghentikan proses jika form belum memenuhi validasi
@@ -125,8 +126,7 @@ class KegiatanFormViewModel : ViewModel() {
 
         // Menyerahkan objek kegiatan kepada fungsi penyimpanan
         return try {
-            simpan(kegiatan)
-
+            PenyimpananAgendaUKM.tambah(kegiatan.namaKegiatan, kegiatan.deskripsiKegiatan, kegiatan.tanggalKegiatan, kegiatan.waktuMulai, kegiatan.waktuSelesai, kegiatan.ruangan, kegiatan.ukm)
             // Mengosongkan form setelah penyimpanan berhasil
             selesaiMenyimpan()
             true

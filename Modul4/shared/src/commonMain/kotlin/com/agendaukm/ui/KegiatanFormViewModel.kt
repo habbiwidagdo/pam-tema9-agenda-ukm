@@ -1,14 +1,14 @@
-
 package com.agendaukm.ui
 
 import androidx.lifecycle.ViewModel
+import com.agendaukm.data.PenyimpananAgendaUKM
 import com.agendaukm.model.Kegiatan
 import com.agendaukm.model.StatusKegiatan
 import com.agendaukm.model.UKM
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import com.agendaukm.data.PenyimpananAgendaUKM
+import kotlinx.coroutines.runBlocking
 
 class KegiatanFormViewModel : ViewModel() {
 
@@ -67,6 +67,27 @@ class KegiatanFormViewModel : ViewModel() {
         }
     }
 
+    // Memperbarui nama UKM
+    fun ubahNamaUKM(nilai: String) {
+        _uiState.update {
+            it.copy(namaUKM = nilai, pesan = null)
+        }
+    }
+
+    // Memperbarui penanggung jawab UKM
+    fun ubahPenanggungJawab(nilai: String) {
+        _uiState.update {
+            it.copy(penanggungJawab = nilai, pesan = null)
+        }
+    }
+
+    // Memperbarui kontak person UKM
+    fun ubahKontakPerson(nilai: String) {
+        _uiState.update {
+            it.copy(kontakPerson = nilai, pesan = null)
+        }
+    }
+
     // Memvalidasi form sebelum proses penyimpanan dimulai
     fun mulaiMenyimpan(): Boolean {
         val state = _uiState.value
@@ -90,12 +111,10 @@ class KegiatanFormViewModel : ViewModel() {
     }
 
     // Membentuk objek Kegiatan dan menyerahkannya ke fungsi penyimpanan
-    // Fungsi simpan disediakan oleh pemanggil agar dapat dihubungkan
-    // dengan mekanisme penyimpanan yang dibuat oleh anggota lain
     fun kirim(
         idKegiatan: Int,
         ukm: UKM?,
-//        simpan: suspend (Kegiatan) -> Unit
+        simpan: (suspend (Kegiatan) -> Unit)? = null
     ): Boolean {
 
         // Menghentikan proses jika form belum memenuhi validasi
@@ -126,7 +145,19 @@ class KegiatanFormViewModel : ViewModel() {
 
         // Menyerahkan objek kegiatan kepada fungsi penyimpanan
         return try {
-            PenyimpananAgendaUKM.tambah(kegiatan.namaKegiatan, kegiatan.deskripsiKegiatan, kegiatan.tanggalKegiatan, kegiatan.waktuMulai, kegiatan.waktuSelesai, kegiatan.ruangan, kegiatan.ukm)
+            if (simpan != null) {
+                runBlocking { simpan(kegiatan) }
+            } else {
+                PenyimpananAgendaUKM.tambah(
+                    kegiatan.namaKegiatan,
+                    kegiatan.deskripsiKegiatan,
+                    kegiatan.tanggalKegiatan,
+                    kegiatan.waktuMulai,
+                    kegiatan.waktuSelesai,
+                    kegiatan.ruangan,
+                    kegiatan.ukm
+                )
+            }
             // Mengosongkan form setelah penyimpanan berhasil
             selesaiMenyimpan()
             true

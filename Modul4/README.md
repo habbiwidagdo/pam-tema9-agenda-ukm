@@ -123,3 +123,53 @@ Filter berdasarkan status tersebut merupakan fungsi pengolahan koleksi yang ters
 #### Tugas 4 — Habbi Widagdo
 - Membuat `LayarUtama.kt` yang menyusun layar menggunakan `Scaffold`, header judul, dan FAB sebagai elemen kerangka antarmuka.
 - Menghubungkan `LayarUtama` ke `App.kt`, menguji tampilan pada Desktop dan Android, serta memperbarui README dengan tangkapan layar UI.
+
+## Praktikum 4 — Implementasi State & MVVM
+
+Praktikum 4 mengimplementasikan arsitektur MVVM (Model-View-ViewModel) dan State Management pada aplikasi Agenda UKM sesuai panduan Modul 4 Compose Multiplatform.
+
+### Pembagian Tugas Kelompok Modul 4
+
+| No. | Nama Anggota | NIM | Tugas |
+|---|---|---|---|
+| 1 | Najlatika | 123140078 | **ViewModel & State Manager (Anggota 1):** Membuat `KegiatanFormUiState` (data class state form beserta kalkulasi properti `bisaSimpan`) dan `KegiatanFormViewModel` mengolah `MutableStateFlow` & `StateFlow`. |
+| 2 | Afifa Aulia | 123140073 | **UI Form Builder (Anggota 2):** Membuat komponen stateless `KolomTeks` (`komponenUi.kt`) dan merakit antarmuka form pada `KegiatanFormScreen.kt`. |
+| 3 | Arsa Salsabila | 123140108 | **Data Store Engineer (Anggota 3):** Membangun `PenyimpananAgendaUKM` berbasis Singleton `object` dan `MutableStateFlow` untuk menyimpan data kegiatan baru secara in-memory. |
+| 4 | Habbi Widagdo | 123140204 | **Integrator & Documenter (Anggota 4):** Menggabungkan Layar Form dan Layar Daftar di `App.kt`, mengelola navigasi state `diForm`, mengamati data reaktif dengan `collectAsState()`, dan menyusun dokumentasi `README.md`. |
+
+---
+
+### Konsep State Management & MVVM yang Diterapkan
+
+1. **Unidirectional Data Flow (Aliran Data Satu Arah):**
+  - **State Turun:** Data dari `FormUiState` / `PenyimpananAgendaUKM` mengalir turun ke tampilan Composable (`KegiatanFormScreen` dan `LayarUtama`).
+  - **Event Naik:** Setiap aksi pengguna (ketikan pada `KolomTeks`, klik tombol Simpan, atau klik FAB `+`) mengirimkan event naik ke ViewModel / `App.kt`.
+2. **Stateless UI Component:**
+  - `KolomTeks` tidak menyimpan state sendiri (`remember`), melainkan menerima `value` dan melaporkan perubahan via callback `onValueChange`.
+3. **Penyimpanan State Terpisah (ViewModel & StateFlow):**
+  - Menggunakan `StateFlow` dan `ViewModel` agar data form tidak hilang saat terjadi rotasi layar (Configuration Change).
+  - Properti `bisaSimpan` dihitung secara dinamis dari kelengkapan kolom input tanpa perlu menyimpan variabel terpisah.
+
+---
+
+### Hasil Pengujian Aplikasi (Checkpoint Minggu 4)
+
+#### Tampilan Mobile
+
+| Tambah Kegiatan | Daftar Kegiatan |
+| :---: | :---: |
+| ![Tambah Kegiatan Mobile](img/mobile-4-TambahKegiatan.png) | ![Daftar Kegiatan Mobile](img/mobile-4-DaftarKegiatan.png) |
+
+---
+
+#### Tampilan Desktop
+
+| Tambah Kegiatan | Daftar Kegiatan |
+| :---: | :---: |
+| ![Tambah Kegiatan Desktop](img/desktop-4-TambahKegiatan.png) | ![Daftar Kegiatan Desktop](img/desktop-4-DaftarKegiatan.png) |
+
+**Panduan Pengujian UI:**
+1. Klik tombol **`+` (FAB)** pada layar utama untuk membuka Form Tambah Kegiatan.
+2. Isi kolom isian (Nama Kegiatan, Deskripsi, Tanggal, Waktu, Ruangan).
+3. Perhatikan tombol **Simpan Kegiatan** otomatis aktif ketika semua field wajib terisi.
+4. Klik **Simpan Kegiatan**, aplikasi akan secara otomatis kembali ke layar utama dan data kegiatan baru muncul pada daftar kegiatan secara reaktif.

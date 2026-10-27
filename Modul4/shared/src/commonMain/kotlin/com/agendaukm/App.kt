@@ -1,67 +1,66 @@
 package com.agendaukm
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import com.agendaukm.data.PenyimpananAgendaUKM
 import com.agendaukm.model.Kegiatan
-import com.agendaukm.model.StatusKegiatan
-import com.agendaukm.model.UKM
-import com.agendaukm.model.label
-import com.agendaukm.model.ringkas
+import com.agendaukm.ui.DetailKegiatanDialog
+import com.agendaukm.ui.KegiatanFormScreen
 import com.agendaukm.ui.LayarUtama
 
 @Composable
 fun App() = MaterialTheme {
+    // ----------------------------------------------
+    // Integrasi navigasi dan data reaktif stateFlow
+    // ----------------------------------------------
 
-    // Pengujian tugas 2: LaunchedEffect(Unit) berjalan otomatis di background saat UI muncul
-    LaunchedEffect(Unit){
-        println("Verifikasi Tugas 2")
+    // Mengamati data daftar kegiatan terbaru secara real time dari PenyimpananAgendaUKM menggunakan collectAsState()
+    val daftarKegiatan by PenyimpananAgendaUKM.daftar.collectAsState()
 
-        // 1. Data UKM
-        val ukmBasket = UKM(
-            id = 1,
-            namaUKM = "ITERA Basketball",
-            penanggungJawab = "Ucup",
-            kontakPerson = "081234567890"
-        )
+    // State navigasi untuk menentukan halaman mana yang aktif (F = layar daftar, T = layar form)
+    var diForm by remember { mutableStateOf(false) }
 
-        // 2. Data kegiatan
-        val kegiatanAwal = Kegiatan (
-            id = 1,
-            namaKegiatan = "Latihan rutin",
-            deskripsiKegiatan = null,
-            tanggalKegiatan = "20 Oktober 2026",
-            waktuMulai = "15.00",
-            waktuSelesai = "18.00",
-            ruangan = "Lapangan basket",
-            ukm = ukmBasket
-        )
+    // State untuk menyimpan kegiatan yang dipilih user untuk menampilkan dialog detail
+    var kegiatanTerpilih by remember { mutableStateOf<Kegiatan?>(null) }
 
-        // 3. Pengujian copy()
-        val kegiatanBaru = kegiatanAwal.copy(
-            deskripsiKegiatan = "Sparing antar divisi",
-            status = StatusKegiatan.Berlangsung
-        )
+    // Menyusun seluruh layar menggunakan column
+    Column(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        // Pengecekan kondisi state diForm untuk mengatur rute navigasi layar
+        if (diForm) {
+            KegiatanFormScreen(
+                onSimpanKlik = {
+                    diForm = false  // Mengubah state diForm menjadi false untuk berpindah ke layar daftar
+                }
+            )
+        } else {
+            // Jika diForm bernilai false, tampilkan layar utama dengan daftar kegiatan
+            LayarUtama(
+                kegiatanList = daftarKegiatan,
+                onKegiatanClick = { kegiatan ->
+                    kegiatanTerpilih = kegiatan
+                },
+                onFabClick = {
+                    diForm = true  // Mengubah state diForm menjadi true untuk berpindah ke Layar Form Tambah Kegiatan
+                }
+            )
 
-        // 4. Verfikasi pembacaan label
-        println("\nUJI LABEL STATUS")
-        println("Status Awal : ${kegiatanAwal.status.label()}")
-        println("Status Baru: ${kegiatanBaru.status.label()}")
-
-        // 5. Verifikasi ringkas kegiatan
-        println("\nUJI RINGKAS KEGIATAN")
-        println("Kegiatan Awal: ${kegiatanAwal.ringkas()}")
-        println("\nKegiatan Baru: ${kegiatanBaru.ringkas()}")
-
-        // 6. Verifikasi null safety
-        println("\nUJI NULL SAFETY")
-        println("Apakah kegiatan awal bernilai null? ${kegiatanAwal.deskripsiKegiatan == null}")
-        println("Apakah kegiatan baru bernilai null? ${kegiatanBaru.deskripsiKegiatan == null}")
-
-        // 7. Verifikasi fitur copy()
-        println("\nUJI COPY")
-        println("Apakah objek awal dan baru sama? ${kegiatanAwal === kegiatanBaru}")
+            // Menampilkan dialog detail jika ada kegiatan yang diklik oleh user
+            kegiatanTerpilih?.let { kegiatan ->
+                DetailKegiatanDialog(
+                    kegiatan = kegiatan,
+                    onDismiss = { kegiatanTerpilih = null }
+                )
+            }
+        }
     }
-
-    LayarUtama()
 }

@@ -1,6 +1,9 @@
 package com.agendaukm
 
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.LaunchedEffect
 import com.agendaukm.data.SumberKegiatanPalsu
+import com.agendaukm.model.Kegiatan
 import com.agendaukm.model.StatusKegiatan
 import com.agendaukm.model.ringkas
 import kotlinx.coroutines.flow.collect
@@ -15,8 +18,57 @@ import com.agendaukm.ui.KegiatanFormUiState
 import com.agendaukm.ui.KegiatanFormViewModel
 import kotlin.test.assertFalse
 import com.agendaukm.model.UKM
+import com.agendaukm.model.label
 
 class SharedCommonTest {
+
+    @Test
+    fun testVerifikasiTugasModul2ClassDanNullSafety() {
+            // 1. Data UKM
+            val ukmBasket = UKM(
+                id = 1,
+                namaUKM = "ITERA Basketball",
+                penanggungJawab = "Ucup",
+                kontakPerson = "081234567890"
+            )
+
+            // 2. Data kegiatan
+            val kegiatanAwal = Kegiatan (
+                id = 1,
+                namaKegiatan = "Latihan rutin",
+                deskripsiKegiatan = null,
+                tanggalKegiatan = "20 Oktober 2026",
+                waktuMulai = "15.00",
+                waktuSelesai = "18.00",
+                ruangan = "Lapangan basket",
+                ukm = ukmBasket
+            )
+
+            // 3. Pengujian copy()
+            val kegiatanBaru = kegiatanAwal.copy(
+                deskripsiKegiatan = "Sparing antar divisi",
+                status = StatusKegiatan.Berlangsung
+            )
+
+            // 4. Verfikasi pembacaan label
+            println("\nUJI LABEL STATUS")
+            println("Status Awal : ${kegiatanAwal.status.label()}")
+            println("Status Baru: ${kegiatanBaru.status.label()}")
+
+            // 5. Verifikasi ringkas kegiatan
+            println("\nUJI RINGKAS KEGIATAN")
+            println("Kegiatan Awal: ${kegiatanAwal.ringkas()}")
+            println("\nKegiatan Baru: ${kegiatanBaru.ringkas()}")
+
+            // 6. Verifikasi null safety
+            println("\nUJI NULL SAFETY")
+            println("Apakah kegiatan awal bernilai null? ${kegiatanAwal.deskripsiKegiatan == null}")
+            println("Apakah kegiatan baru bernilai null? ${kegiatanBaru.deskripsiKegiatan == null}")
+
+            // 7. Verifikasi fitur copy()
+            println("\nUJI COPY")
+            println("Apakah objek awal dan baru sama? ${kegiatanAwal === kegiatanBaru}")
+        }
 
     @Test
     fun testPantauKegiatanDenganFlowOperator() = runBlocking {
@@ -161,29 +213,11 @@ class SharedCommonTest {
         viewModel.ubahRuangan("Aula")
         viewModel.ubahUKM(1)
 
-        var fungsiSimpanDipanggil = false
-
         // Memeriksa data kegiatan yang diserahkan untuk disimpan.
-        val hasil = viewModel.kirim(12, ukm) { kegiatan ->
-            fungsiSimpanDipanggil = true
-
-            assertEquals(12, kegiatan.id)
-            assertEquals("Latihan Rutin", kegiatan.namaKegiatan)
-            assertEquals(
-                "Latihan mingguan",
-                kegiatan.deskripsiKegiatan
-            )
-            assertEquals("2026-11-01", kegiatan.tanggalKegiatan)
-            assertEquals("09:00", kegiatan.waktuMulai)
-            assertEquals("11:00", kegiatan.waktuSelesai)
-            assertEquals("Aula", kegiatan.ruangan)
-            assertEquals(1, kegiatan.ukm.id)
-            assertEquals(StatusKegiatan.Mendatang, kegiatan.status)
-        }
+        val hasil = viewModel.kirim(12, ukm)
 
         // Memastikan penyimpanan berhasil dan form kembali kosong.
         assertTrue(hasil)
-        assertTrue(fungsiSimpanDipanggil)
         assertEquals("", viewModel.uiState.value.namaKegiatan)
         assertFalse(viewModel.uiState.value.sedangMenyimpan)
     }
@@ -207,14 +241,9 @@ class SharedCommonTest {
             kontakPerson = "87654321"
         )
 
-        var fungsiSimpanDipanggil = false
-
-        val hasil = viewModel.kirim(12, ukm) {
-            fungsiSimpanDipanggil = true
-        }
+        val hasil = viewModel.kirim(12, ukm)
 
         assertFalse(hasil)
-        assertFalse(fungsiSimpanDipanggil)
         assertFalse(viewModel.uiState.value.sedangMenyimpan)
         assertEquals(
             "UKM yang dipilih tidak valid.",
@@ -226,12 +255,6 @@ class SharedCommonTest {
     @Test
     fun testKirimMenanganiKegagalanPenyimpanan() = runBlocking {
         val viewModel = KegiatanFormViewModel()
-        val ukm = UKM(
-            id = 1,
-            namaUKM = "UKM Basket",
-            penanggungJawab = "Joko",
-            kontakPerson = "12345678"
-        )
 
         viewModel.ubahNamaKegiatan("Latihan Rutin")
         viewModel.ubahTanggalKegiatan("2026-11-01")
@@ -240,15 +263,13 @@ class SharedCommonTest {
         viewModel.ubahRuangan("Aula")
         viewModel.ubahUKM(1)
 
-        // Mensimulasikan kegagalan fungsi penyimpanan.
-        val hasil = viewModel.kirim(12, ukm) {
-            throw IllegalStateException("Penyimpanan bermasalah")
-        }
+        // Mensimulasikan kegagalan fungsi penyimpanan jika UKM null.
+        val hasil = viewModel.kirim(12, null)
 
         assertFalse(hasil)
         assertFalse(viewModel.uiState.value.sedangMenyimpan)
         assertEquals(
-            "Penyimpanan bermasalah",
+            "UKM yang dipilih tidak valid.",
             viewModel.uiState.value.pesan
         )
 

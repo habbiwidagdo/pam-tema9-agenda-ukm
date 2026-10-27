@@ -156,9 +156,9 @@ Praktikum 4 mengimplementasikan arsitektur MVVM (Model-View-ViewModel) dan State
 
 #### Tampilan Mobile
 
-| Tambah Kegiatan | Daftar Kegiatan |
-| :---: | :---: |
-| ![Tambah Kegiatan Mobile](img/mobile-4-TambahKegiatan.png) | ![Daftar Kegiatan Mobile](img/mobile-4-DaftarKegiatan.png) |
+| Tambah Kegiatan |                      Daftar Kegiatan                      |
+| :---: |:---------------------------------------------------------:|
+|<img src="img/mobile-4-TambahKegiatan.png" width="250" /> | <img src="img/mobile-4-DaftarKegiatan.png" width="250" /> |
 
 ---
 
